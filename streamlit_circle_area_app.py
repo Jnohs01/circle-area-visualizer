@@ -53,3 +53,4 @@ with col2:
     ax2.set_ylabel("Ring Index")
 
     st.pyplot(fig)
+
