@@ -3,56 +3,53 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 st.set_page_config(layout="wide")
+st.title("Understanding the Area of a Circle Visually")
 
-# Left column: Explanation
-with st.sidebar:
-    st.header("Why This Works")
-    st.markdown("""
-    We are exploring the area of a circle by breaking it down into **rings**.
-
-    Each ring is 1 unit thicker than the last — it's like using a ruler to measure the circle in layers.
-
-    Now, imagine you **unwrap** each ring. It turns into a thin rectangle!
-
-    The **height** of each rectangle = 1 unit of radial thickness.  
-    The **width** = the **circumference** at that radius = 2πr
-
-    If we stack all these rectangles from the center outward, we create a **triangle-like shape**.
-
-    When we let the number of rings grow toward infinity:
-    - The **base** becomes π·r (half the circumference)
-    - The **height** becomes r
-
-    So the total area = base × height = π·r × r = π·r²
-
-    This is the **essence of integration** — summing many infinitely small parts.
-    """)
-
-# Right column: Visuals
-col1, col2 = st.columns([1, 1])
+col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.subheader("Circle with Concentric Rings")
-    fig, ax = plt.subplots(figsize=(5, 5))
-    ax.set_aspect('equal')
-    num_rings = 20
-    for r in range(1, num_rings + 1):
-        circle = plt.Circle((0, 0), r, fill=False, color='blue', linewidth=0.8)
-        ax.add_artist(circle)
-    ax.set_xlim(-num_rings - 1, num_rings + 1)
-    ax.set_ylim(-num_rings - 1, num_rings + 1)
-    ax.axis('off')
-    st.pyplot(fig)
+    st.header("Visual Explanation")
+    st.markdown("""
+    This visualization helps you **see** why the area of a circle is \( \pi r^2 \).
+
+    1. The circle is divided into **concentric rings** — each representing a unit of distance from the center.
+    2. These rings can be imagined as **thin strips**.
+    3. When we **unwrap** and **stack** these strips (like slicing an orange and lining up the peels),
+       they form a shape close to a rectangle.
+    4. The **height** of this rectangle becomes the radius \( r \), and the **width** becomes half the circumference \( \pi r \).
+
+    So the area becomes:
+
+    \[ \text{Area} = \pi r \times r = \pi r^2 \]
+
+    This is the intuition behind **integration** — summing infinitely small pieces to get a whole.
+    """)
 
 with col2:
-    st.subheader("Unwrapped and Stacked Rings")
-    fig2, ax2 = plt.subplots(figsize=(5, 5))
-    for r in range(1, num_rings + 1):
-        width = 2 * np.pi * r
-        ax2.add_patch(plt.Rectangle((0, r), width, 1, edgecolor='green', facecolor='lightgreen'))
-    ax2.set_xlim(0, 2 * np.pi * num_rings + 5)
-    ax2.set_ylim(0, num_rings + 2)
-    ax2.set_xlabel("Unwrapped Circumference (2πr)")
-    ax2.set_ylabel("Radius (r)")
-    ax2.set_title("Stacked Thin Rectangles")
-    st.pyplot(fig2)
+    st.subheader("Concentric Rings and Stacked Representation")
+
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+    # Left: Concentric circles
+    ax1 = axs[0]
+    ax1.set_aspect('equal')
+    r = 1
+    rings = 20
+    for i in range(1, rings + 1):
+        circle = plt.Circle((0, 0), r * i / rings, color='lightblue', fill=False)
+        ax1.add_patch(circle)
+    ax1.set_xlim(-1.1, 1.1)
+    ax1.set_ylim(-1.1, 1.1)
+    ax1.set_title("Concentric Rings")
+    ax1.axis('off')
+
+    # Right: Unwrapped and stacked rectangles
+    ax2 = axs[1]
+    for i in range(rings):
+        width = 2 * np.pi * (r * i / rings)
+        ax2.barh(i, width, height=1, color='lightgreen', edgecolor='black')
+    ax2.set_title("Stacked Ring Strips")
+    ax2.set_xlabel("Approx. Unwrapped Length")
+    ax2.set_ylabel("Ring Index")
+
+    st.pyplot(fig)
