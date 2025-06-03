@@ -2,55 +2,57 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Set wide layout
-st.set_page_config(layout="wide", page_title="Visualizing the Area of a Circle")
+st.set_page_config(layout="wide")
 
-# Left-hand explanation panel
+# Left column: Explanation
 with st.sidebar:
-    st.title("📘 Why This Works")
+    st.header("Why This Works")
     st.markdown("""
-    ### The Circle and Its Secret
+    We are exploring the area of a circle by breaking it down into **rings**.
 
-    A circle isn’t just round—it’s a collection of **infinitely many rings**, each one unit farther from the center.
+    Each ring is 1 unit thicker than the last — it's like using a ruler to measure the circle in layers.
 
-    Imagine each ring as a **thin strip** — like peeling an onion layer by layer.
+    Now, imagine you **unwrap** each ring. It turns into a thin rectangle!
 
-    Now, unwrap those rings.
+    The **height** of each rectangle = 1 unit of radial thickness.  
+    The **width** = the **circumference** at that radius = 2πr
 
-    They become **skinny rectangles**, where:
-    - Height = 1 unit (our measurement resolution)
-    - Width = the **circumference at that radius** (≈ 2π·r)
+    If we stack all these rectangles from the center outward, we create a **triangle-like shape**.
 
-    If we **stack** all these skinny rectangles, the result is:
-    - A total width = **π·r**
-    - A total height = **r**
+    When we let the number of rings grow toward infinity:
+    - The **base** becomes π·r (half the circumference)
+    - The **height** becomes r
 
-    That’s why:
-    > **Area = π·r²**
+    So the total area = base × height = π·r × r = π·r²
 
-    This is integration — adding up an infinite number of tiny measurable parts.
+    This is the **essence of integration** — summing many infinitely small parts.
     """)
 
-# Right-hand interactive display
-st.title("📐 Visualizing the Area of a Circle with Stacked Rings")
+# Right column: Visuals
+col1, col2 = st.columns([1, 1])
 
-# Radius input
-r = st.slider("Adjust Radius", min_value=1, max_value=20, value=10)
-theta = np.linspace(0, 2 * np.pi, 100)
+with col1:
+    st.subheader("Circle with Concentric Rings")
+    fig, ax = plt.subplots(figsize=(5, 5))
+    ax.set_aspect('equal')
+    num_rings = 20
+    for r in range(1, num_rings + 1):
+        circle = plt.Circle((0, 0), r, fill=False, color='blue', linewidth=0.8)
+        ax.add_artist(circle)
+    ax.set_xlim(-num_rings - 1, num_rings + 1)
+    ax.set_ylim(-num_rings - 1, num_rings + 1)
+    ax.axis('off')
+    st.pyplot(fig)
 
-# Visualizing stacked rectangles
-fig, ax = plt.subplots(figsize=(10, 6))
-for i in range(1, r + 1):
-    x = i * np.pi  # approximated width of the "unwrapped" ring
-    rect = plt.Rectangle((0, i - 1), x, 1, edgecolor='black', facecolor='skyblue', alpha=0.7)
-    ax.add_patch(rect)
-    ax.text(x + 0.3, i - 0.5, f"r={i}", verticalalignment='center')
-
-ax.set_xlim(0, r * np.pi + 5)
-ax.set_ylim(0, r)
-ax.set_xlabel("Width ≈ π·r")
-ax.set_ylabel("Height = r")
-ax.set_title("Unwrapping Circle Rings into Rectangles")
-ax.set_aspect('auto')
-
-st.pyplot(fig)
+with col2:
+    st.subheader("Unwrapped and Stacked Rings")
+    fig2, ax2 = plt.subplots(figsize=(5, 5))
+    for r in range(1, num_rings + 1):
+        width = 2 * np.pi * r
+        ax2.add_patch(plt.Rectangle((0, r), width, 1, edgecolor='green', facecolor='lightgreen'))
+    ax2.set_xlim(0, 2 * np.pi * num_rings + 5)
+    ax2.set_ylim(0, num_rings + 2)
+    ax2.set_xlabel("Unwrapped Circumference (2πr)")
+    ax2.set_ylabel("Radius (r)")
+    ax2.set_title("Stacked Thin Rectangles")
+    st.pyplot(fig2)
