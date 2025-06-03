@@ -1,61 +1,29 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
+from PIL import Image
 
-# Configure layout
 st.set_page_config(layout="wide")
+st.title("Understanding the Area of a Circle")
 
-# Sidebar Explanation
-with st.sidebar:
-    st.header("🧠 Visual Logic: Area of a Circle")
+col1, col2 = st.columns([1, 2])
+
+with col1:
+    st.markdown("### Concept Overview")
     st.markdown("""
-    #### Why this works
+    The area of a circle is calculated using the formula **A = π·r²**.  
+    But where does that come from?
 
-    We're not memorizing formulas — we're building them.
+    Imagine slicing the circle into thin rings, each one a bit further from the center.
 
-    1. We slice the circle into thin **concentric rings**.
-    2. Each ring, when unwrapped, becomes a **thin rectangle**.
-    3. Stack these rectangles — they form a **triangle**.
-    
-    - Triangle base: π·r  
-    - Triangle height: r  
-    - Triangle area: ½·base·height = **π·r²**
+    - Each **ring** has a circumference = **2πr**
+    - When **unwrapped**, it becomes a **rectangle**
+    - The width of the rectangle becomes **π·r**, and its height is **r**
 
-    This is integration: summing small slices to find total area.
+    This process — slicing and stacking — is what integration does.
+
+    > Just like counting squares in a rectangle gives Area = L × W,  
+    > stacking thin rings gives Area = π × r × r = π·r²
     """)
 
-# Scrollable container
-with st.container():
-    st.title("🔵 Area of a Circle — Built From Rings")
-
-    # --- Plot 1: Concentric Rings ---
-    st.subheader("Step 1: Concentric Rings Inside a Circle")
-    fig1, ax1 = plt.subplots(figsize=(5, 5))
-    ax1.set_aspect('equal')
-    r_max = 5
-    num_rings = 50
-    radii = np.linspace(0, r_max, num_rings)
-
-    for r in radii:
-        circle = plt.Circle((0, 0), r, fill=False, color='blue', linewidth=0.6)
-        ax1.add_artist(circle)
-
-    ax1.set_xlim(-r_max - 1, r_max + 1)
-    ax1.set_ylim(-r_max - 1, r_max + 1)
-    ax1.axis('off')
-    st.pyplot(fig1)
-
-    # --- Plot 2: Unwrapped Rectangles ---
-    st.subheader("Step 2: Unwrapped Rings = Stacked Rectangles")
-    fig2, ax2 = plt.subplots(figsize=(6, 4))
-    for i, r in enumerate(radii):
-        width = 2 * np.pi * r
-        rect = plt.Rectangle((0, i), width, 1, facecolor='lightblue', edgecolor='blue')
-        ax2.add_patch(rect)
-
-    ax2.set_xlim(0, 2 * np.pi * r_max)
-    ax2.set_ylim(0, num_rings)
-    ax2.set_xlabel("Unwrapped Circumference")
-    ax2.set_ylabel("Radial Step")
-    ax2.set_title("Unwrapped Rings Form a Right Triangle")
-    st.pyplot(fig2)
+with col2:
+    st.image("images/concentric_rings.png", caption="Circle built with thin concentric rings", use_column_width=True)
+    st.image("images/unwrapped_rings.png", caption="Unwrapped rings stacked into a rectangle", use_column_width=True)
