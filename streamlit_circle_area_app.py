@@ -20,7 +20,7 @@ r_max = 5
 ring_thickness = r_max / num_rings
 
 # Set up figure
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(4, 3))
 ax.set_xlim(-1, r_max * np.pi + 1)
 ax.set_ylim(-r_max - 1, r_max + 1)
 ax.set_aspect('equal')
