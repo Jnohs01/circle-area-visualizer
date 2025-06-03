@@ -3,77 +3,61 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 st.set_page_config(layout="wide")
-st.title("Understanding the Area of a Circle")
 
 # Sidebar explanation
 with st.sidebar:
-    st.header("Concept Overview")
+    st.markdown("## Understanding the Area of a Circle")
     st.markdown("""
-    The area of a circle is calculated using the formula **A = π·r²** —  
-    but *where does that come from*?
+**Where does A = π·r² come from?**
 
-    Imagine slicing the circle into thin rings, each 1 unit farther from the center.
+Imagine slicing a circle into **thin rings**.
 
-    - Each ring has a circumference = **2πr**
-    - When you **unwrap** a ring, it becomes a thin rectangle
-    - As we stack all the rectangles, the height becomes **r** and total width becomes **π·r**
+Each ring has:
+- Circumference = 2πr
+- Tiny thickness = dr
 
-    Just like a rectangle has area = L × W,  
-    the stacked shape has area = **π·r × r = π·r²**
+Unwrapping a ring gives a thin **rectangle**.
 
-    This is a visual form of integration — slicing and adding up small parts.
-    """)
+Stacking all rings from center to edge forms a triangle-like shape:
+- Height = r
+- Base = πr
 
-# Slider for resolution
-num_rings = st.slider("Number of Rings (resolution)", min_value=1, max_value=100, value=20)
+So:  
+**Area = base × height = πr × r = π·r²**
 
-# Compute ring data
-radii = np.linspace(0, 1, num_rings + 1)[1:]
-width = 1 / num_rings
-circumferences = 2 * np.pi * radii
-
-# Layout split: visuals in one column
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Concentric Rings (Circle View)")
-    fig1, ax1 = plt.subplots(figsize=(4, 4))
-    ax1.set_aspect('equal')
-    for r in radii:
-        circle = plt.Circle((0, 0), r, fill=False, color='blue', linewidth=1)
-        ax1.add_artist(circle)
-    ax1.set_xlim(-1.1, 1.1)
-    ax1.set_ylim(-1.1, 1.1)
-    ax1.axis('off')
-    st.pyplot(fig1, use_container_width=True)
-
-with col2:
-    st.subheader("Unwrapped Rings (Stacked Rectangles)")
-    fig2, ax2 = plt.subplots(figsize=(5, 5))
-    y_offset = 0
-    for c in circumferences[::-1]:  # stack larger ones on bottom
-        rect = plt.Rectangle((0, y_offset), c, width, color='orange', ec='black')
-        ax2.add_patch(rect)
-        y_offset += width
-    ax2.set_xlim(0, 2 * np.pi + 1)
-    ax2.set_ylim(0, 1.1)
-    ax2.set_xlabel("Width ≈ π·r")
-    ax2.set_ylabel("Height = r")
-    ax2.set_title("Stacked Approximation")
-    st.pyplot(fig2, use_container_width=True)
-
-# Final explanatory note
-st.markdown("""
----
-
-### Why This Works
-
-If you take many thin rings and unwrap them:
-
-- Their total **width becomes π·r**
-- Their total **height is r**
-
-So, **Area = π·r × r = π·r²**
-
-This is the heart of integral calculus — turning a curved shape into small pieces we can understand.
+This is what **integration** does — it adds up infinitely thin slices.
 """)
+
+# Slider
+num_rings = st.slider("Number of rings (resolution)", 1, 100, 30)
+radius = 1
+ring_thickness = radius / num_rings
+
+# Concentric circle visualization
+fig1, ax1 = plt.subplots(figsize=(4, 4))
+ax1.set_aspect('equal')
+for i in range(num_rings):
+    r = ring_thickness * (i + 1)
+    circle = plt.Circle((0, 0), r, fill=False, color='blue', linewidth=0.8)
+    ax1.add_patch(circle)
+ax1.set_xlim(-radius - 0.1, radius + 0.1)
+ax1.set_ylim(-radius - 0.1, radius + 0.1)
+ax1.axis('off')
+st.pyplot(fig1)
+
+# Unwrapped rings as stacked rectangles
+fig2, ax2 = plt.subplots(figsize=(6, 2.5))
+for i in range(num_rings):
+    r1 = ring_thickness * i
+    r2 = ring_thickness * (i + 1)
+    avg_r = (r1 + r2) / 2
+    width = 2 * np.pi * avg_r
+    height = ring_thickness
+    ax2.add_patch(plt.Rectangle((0, i * ring_thickness), width, height, fill=False, edgecolor='green', linewidth=0.8))
+ax2.set_xlim(0, 2 * np.pi * radius)
+ax2.set_ylim(0, radius)
+ax2.set_title("Stacked Unwrapped Rings")
+ax2.set_xlabel("Width ~ 2πr")
+ax2.set_ylabel("Height = r")
+ax2.grid(False)
+st.pyplot(fig2)
